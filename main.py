@@ -1,7 +1,6 @@
 import os
 import discord
 from discord.ext import commands
-from keep_alive import keep_alive
 
 def get_prefix(bot, message):
 	prefixes = ['do ', '$', 'chitti ']
@@ -29,5 +28,4 @@ async def on_ready():
 	await bot.change_presence(activity=discord.Game(name='$help', type=1, url=''))
 	print('Successfully logged in and booted...')
 
-keep_alive()
 bot.run(os.environ['TOKEN'], bot=True, reconnect=True)
