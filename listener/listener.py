@@ -57,7 +57,7 @@ class Listener(commands.Cog):
         self.dump_data()
 
         await ctx.send('''```Command cannot be invoked without subcommand! 
-Use "$listener help" to see all subcommands```''')
+Use `$help listener` to see all subcommands```''')
 
     @listener.command(name='add')
     @commands.guild_only()

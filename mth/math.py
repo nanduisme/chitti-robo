@@ -2,31 +2,7 @@ from discord.ext import commands
 
 class Math(commands.Cog):
     def __init__(self, bot):
-        self.bot = bot
-
-    @commands.command(name='math')
-    async def math_help(self, ctx):
-        await ctx.send('''List of all math commands: ```
-- $add |numbers...|
-    -Gives sum of given numbers
-
-- $mult |numbers...|
-    -Gives product of given numbers
-
-- $subtract |x y|
-    -Gives x-y
-    
-- $div |x y|
-    -Gives x/y
-    
-- $mean |numbers...|
-    -Gives the arithmetical mean of given numbers
-    
-- $median |numbers...|
-    -Gives the median of given numbers
-    
-- $mode |numbers...|
-    -Gives the mode of given numbers```''')
+        self.bot = bot)
 
     @commands.command(name='add')
     async def add(self, ctx, *nums):

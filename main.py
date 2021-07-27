@@ -13,7 +13,7 @@ def get_prefix(bot, message):
 
 	return commands.when_mentioned_or(*prefixes)(bot, message)
 
-initial_extensions = ['misc', 'rps.main', 'ttt.main', 'listener.listener', 'mth.math']
+initial_extensions = ['misc', 'rps.main', 'ttt.main', 'listener.listener', 'mth.math', 'help']
 
 intents = discord.Intents.default()
 intents.members = True
