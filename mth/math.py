@@ -2,7 +2,7 @@ from discord.ext import commands
 
 class Math(commands.Cog):
     def __init__(self, bot):
-        self.bot = bot)
+        self.bot = bot
 
     @commands.command(name='add')
     async def add(self, ctx, *nums):
