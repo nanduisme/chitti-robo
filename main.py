@@ -32,3 +32,4 @@ async def on_ready():
 	print('Successfully logged in and booted...')
 
 bot.run(os.environ['TOKEN'], bot=True, reconnect=True)
+#working?
