@@ -1,9 +1,6 @@
-from dotenv import load_dotenv
 import os
 import discord
 from discord.ext import commands
-
-load_dotenv()
 
 def get_prefix(bot, message):
 	prefixes = ['do ', '$', 'chitti ']
@@ -32,4 +29,3 @@ async def on_ready():
 	print('Successfully logged in and booted...')
 
 bot.run(os.environ['TOKEN'], bot=True, reconnect=True)
-#working?
