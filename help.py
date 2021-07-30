@@ -104,7 +104,7 @@ class Cog(commands.Cog):
         coolbot = Command(misc, 'Cool Bot 😎',
                         'Find out for yourself. ;)', f'`{ctx.prefix}coolbot`', name='coolbot')
 
-        tier = CommandGroup('**🎖 Messaging Tiers**', f'{ctx.prefix}help tier', 'tier')
+        tier = CommandGroup('**🎖 Messaging Tiers**', f'`{ctx.prefix}help tier`', 'tier')
         deduct = Command(tier, 'Deduct Point', 'Deducts messaging points from a user. (Admins Only)', f'`{ctx.prefix}tier deduct |mention member|`', 'deduct')
         score = Command(tier, 'Messaging Score', 'Shows score and rank of a person or yourself in this server.', f'`{ctx.prefix}tier score |mention member|`', 'score')
         exclude = Command(tier, 'Exclude Channel', 'Excludes said channel from adding up your scores. Useful to nerf spam channels etc.', f'`{ctx.prefix}tier exclude |#channel|`', 'exclude')
