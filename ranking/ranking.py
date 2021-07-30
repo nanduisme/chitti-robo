@@ -139,14 +139,14 @@ class Cog(commands.Cog):
     @commands.Cog.listener()
     @commands.guild_only()
     async def on_message(self, message):
-        data = self.get_data()
-
         if message.author.bot:
-            return
-        if message.channel.id in data[str(message.guild.id)]['excluded_channels']:
             return
 
         self.check_guild(message.guild, message.author)
+        data = self.get_data()
+
+        if message.channel.id in data[str(message.guild.id)]['excluded_channels']:
+            return
 
         data[str(message.guild.id)][str(message.author.id)]['name'] = message.author.name
         data[str(message.guild.id)][str(message.author.id)]['score'] += 1
