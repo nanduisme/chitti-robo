@@ -130,7 +130,7 @@ class Cog(commands.Cog):
         listener.commands = [enable, disable, list, ladd, toggle, remove]
         tier.commands = [leaderboard, score,
                          include, exclude, excluded, deduct]
-        fun.commands = [xo, rps]
+        fun.commands = [xo, rps, ask]
         misc.commands = [coolbot]
 
         all_command_names = []
