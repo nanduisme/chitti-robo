@@ -100,7 +100,7 @@ class Cog(commands.Cog):
         rps = Command(fun, 'Rock Paper Scissors',
                       'I play a game of rock paper scissors with you!', f'`{ctx.prefix}rps`', name='rps')
         ask = Command(fun, 'Ask Question', 'Ask a question and get an answer as a quote. from a very famous person. (8ball but better)',
-                      f'`{ctx.prefix}ask`', name='ask')
+                      f'`{ctx.prefix}ask <question>`', name='ask')
 
         misc = CommandGroup('**✨ Misc**',
                             f'`{ctx.prefix}help misc`',
@@ -118,7 +118,7 @@ class Cog(commands.Cog):
                           f'`{ctx.prefix}tier exclude |#channel|`', 'exclude')
         excluded = Command(tier, 'Excluded Channels List', 'Shows list of all the channels excluded from adding scores.',
                            f'`{ctx.prefix}tier excluded`', 'excluded', aliases=['`list`', '`leaderboard`'])
-        include = Command(tier, 'Iclude Channel', 'Includes said channel to add scores.',
+        include = Command(tier, 'Include Channel', 'Includes said channel to add scores.',
                           f'`{ctx.prefix}tier include |#channel|`', 'include')
         leaderboard = Command(tier, 'Leaderboard', 'Shows the leaderboard of messaging scores for this server',
                               f'`{ctx.prefix}leaderboard`', 'leaderboard', aliases=['`lb`', '`leaderboard`'])
@@ -144,7 +144,7 @@ class Cog(commands.Cog):
                 help.add_field(name=group.title,
                                value=group.command, inline=True)
             help.set_footer(
-                text='Dm Nandu#8677 for suggestions on this bot. :)')
+                text='Dm nandu<3#8677 for suggestions on this bot. :)')
             await ctx.reply(embed=help, mention_author=False)
 
         elif group in group_names and subcommand == None:
