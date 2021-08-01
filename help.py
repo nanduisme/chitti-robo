@@ -5,7 +5,7 @@ from discord.ext import commands
 
 PURPLE = 0x510490
 
-
+# ?
 class CommandGroup:
     def __init__(self, title, command, name, commands=[]) -> None:
         self.title = title
