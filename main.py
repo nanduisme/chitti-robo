@@ -2,10 +2,12 @@ import os
 import discord
 from discord.ext import commands
 from keep_alive import keep_alive
+from dotenv import load_dotenv
 
+load_dotenv()
 
 def get_prefix(bot, message):
-    prefixes = ['do ', '$', 'chitti ']
+    prefixes = ['.', 'test ']
 
     if not message.guild:
         return '$'
@@ -37,4 +39,4 @@ async def on_ready():
 
 keep_alive()
 
-bot.run(os.environ['TOKEN'], bot=True, reconnect=True)
+bot.run(os.environ['TEST_TOKEN'], bot=True, reconnect=True)
