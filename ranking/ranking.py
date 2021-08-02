@@ -2,14 +2,13 @@ from os import name
 import discord
 from discord.ext import commands
 from discord.ext.commands.context import Context
-import json
+from replit import db as data
 
 PURPLE = 0x510490
 
 class Cog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.file = 'ranking/rankings.json'
     
     def sort_members(self, members):
         sorted_list = []
@@ -35,43 +34,28 @@ class Cog(commands.Cog):
 
         return sorted_list
 
-    def get_data(self):
-        with open(self.file, 'r') as f:
-            data = json.load(f)
-        return data
-
-    def update_data(self, data):
-        with open(self.file, 'w') as f:
-            json.dump(data, f)
-
     def reg_member(self, guild, author):
-        data = self.get_data()
-        data[str(guild.id)][str(author.id)] = {
+        data['tier'][str(guild.id)][str(author.id)] = {
             'name': author.name,
             'score': 0
         }
-        self.update_data(data)
 
     def reg_guild(self, guild, author):
-        data = self.get_data()
         guild_id = str(guild.id)
-        data[guild_id] = {
+        data['tier'][guild_id] = {
             'excluded_channels': []
         }
-        self.update_data(data)
         self.reg_member(guild, author)
 
     def check_guild(self, guild, author):
         if not author.bot:
-            data = self.get_data()
-
             guild_id = str(guild.id)
             author_id = str(author.id)
 
-            if guild_id in data:
-                if author_id not in data[guild_id]:
+            if guild_id in data['tier']:
+                if author_id not in data['tier'][guild_id]:
                     self.reg_member(guild, author)
-            elif guild_id not in data:
+            elif guild_id not in data['tier']:
                 self.reg_guild(guild, author)
 
     def decode_mention(self, mention: str):
@@ -101,9 +85,9 @@ class Cog(commands.Cog):
 
         else:
             member = server.get_member(int(mention))
-            data = self.get_data()
+            data['tier'] = self.get_data['tier']()
 
-            if str(member.id) not in data[str(guild.id)] and not member.bot:
+            if str(member.id) not in data['tier'][str(guild.id)] and not member.bot:
                 self.reg_member(guild, member)
 
         return True
@@ -118,13 +102,12 @@ class Cog(commands.Cog):
         return num
 
     def get_rank(self, guild, name):
-        data = self.get_data()[str(guild.id)]
         members = []
-        for member in data:
+        for member in data['tier']:
             if member == 'excluded_channels':
                 continue
-            elif data[member]['score'] > 0:
-                members.append((data[member]['name'], data[member]['score']))
+            elif data['tier'][member]['score'] > 0:
+                members.append((data['tier'][member]['name'], data['tier'][member]['score']))
 
         members = self.sort_members(members)
         members.reverse()
@@ -143,15 +126,12 @@ class Cog(commands.Cog):
             return
 
         self.check_guild(message.guild, message.author)
-        data = self.get_data()
 
-        if message.channel.id in data[str(message.guild.id)]['excluded_channels']:
+        if message.channel.id in data['tier'][str(message.guild.id)]['excluded_channels']:
             return
 
-        data[str(message.guild.id)][str(message.author.id)]['name'] = message.author.name
-        data[str(message.guild.id)][str(message.author.id)]['score'] += 1
-
-        self.update_data(data)
+        data['tier'][str(message.guild.id)][str(message.author.id)]['name'] = message.author.name
+        data['tier'][str(message.guild.id)][str(message.author.id)]['score'] += 1
 
     @commands.group(name='tier', invoke_without_command=True)
     @commands.guild_only()
@@ -175,10 +155,9 @@ class Cog(commands.Cog):
         self.check_guild(ctx.guild, member)
 
         embed = discord.Embed(title=member.name)
-        data = self.get_data()
         embed.set_thumbnail(url=member.avatar_url)
         embed.add_field(name='Messaging Score',
-                        value=f'Your messaging score is `{data[str(ctx.guild.id)][str(member.id)]["score"]}`.')
+                        value=f'Your messaging score is `{data["tier"][str(ctx.guild.id)][str(member.id)]["score"]}`.')
         embed.add_field(name='Rank', value=f'Your rank in this server is `{self.get_rank(ctx.guild, str(member.name))}`')
         await ctx.reply(embed=embed, mention_author=False)
 
@@ -197,13 +176,11 @@ class Cog(commands.Cog):
             await ctx.send('Channel not found.')
             return
 
-        data = self.get_data()
-        if channel.id in data[str(ctx.guild.id)]['excluded_channels']:
+        if channel.id in data['tier'][str(ctx.guild.id)]['excluded_channels']:
             await ctx.send(f'Channel {channel.mention} is already excluded from coutning scores.')
             return 
         
-        data[str(ctx.guild.id)]['excluded_channels'].append(channel.id)
-        self.update_data(data)
+        data['tier'][str(ctx.guild.id)]['excluded_channels'].append(channel.id)
 
         await ctx.send(f'Messages in channel {channel.mention} will no longer add your score.')
 
@@ -228,13 +205,11 @@ class Cog(commands.Cog):
             await ctx.send('Channel not found.')
             return
 
-        data = self.get_data()
-        if channel.id not in data[str(ctx.guild.id)]['excluded_channels']:
+        if channel.id not in data['tier'][str(ctx.guild.id)]['excluded_channels']:
             await ctx.send(f'Channel {channel.mention} is already included from counting scores.')
             return 
         
-        data[str(ctx.guild.id)]['excluded_channels'].remove(channel.id)
-        self.update_data(data)
+        data['tier'][str(ctx.guild.id)]['excluded_channels'].remove(channel.id)
 
         await ctx.send(f'Messages in channel {channel.mention} will now add your score.')
 
@@ -248,8 +223,7 @@ class Cog(commands.Cog):
     @tier.command(aliases=['list'])
     async def excluded(self, ctx:Context):
         self.check_guild(ctx.guild, ctx.author)
-        data = self.get_data()
-        channels = data[str(ctx.guild.id)]['excluded_channels']
+        channels = data['tier'][str(ctx.guild.id)]['excluded_channels']
         embed = discord.Embed(title='Excluded Channels', description='List of channels excluded from increasing messaging scores.', color=PURPLE)
         if len(channels) > 0:
             excluded_channels = ''
@@ -266,13 +240,12 @@ class Cog(commands.Cog):
     @tier.command(aliases=['lb'])
     async def leaderboard(self, ctx, page_number=1):
         self.check_guild(ctx.guild, ctx.author)
-        data = self.get_data()[str(ctx.guild.id)]
         members = []
-        for member in data:
+        for member in data['tier']:
             if member == 'excluded_channels':
                 continue
-            elif data[member]['score'] > 0:
-                members.append((data[member]['name'], data[member]['score']))
+            elif data['tier'][member]['score'] > 0:
+                members.append((data['tier'][member]['name'], data['tier'][member]['score']))
 
         members = self.sort_members(members)
         members.reverse()
@@ -357,14 +330,12 @@ class Cog(commands.Cog):
             await ctx.send('Command cancelled.')
             return
 
-        data = self.get_data()
-        if data[str(ctx.guild.id)][str(member.id)]['score'] - take < 0:
-            data[str(ctx.guild.id)][str(member.id)]['score'] = 0
+        if data['tier'][str(ctx.guild.id)][str(member.id)]['score'] - take < 0:
+            data['tier'][str(ctx.guild.id)][str(member.id)]['score'] = 0
         else:
-            data[str(ctx.guild.id)][str(member.id)]['score'] -= take
+            data['tier'][str(ctx.guild.id)][str(member.id)]['score'] -= take
 
-        await ctx.send(f"{member.mention}'s score is now `{data[str(ctx.guild.id)][str(member.id)]['score']}` after {ctx.author.mention} deduced `{take}` points.")
-        self.update_data(data)
+        await ctx.send(f"{member.mention}'s score is now `{data['tier'][str(ctx.guild.id)][str(member.id)]['score']}` after {ctx.author.mention} deduced `{take}` points.")
 
     @deduct.error
     async def deduct_error(self, ctx, error):
