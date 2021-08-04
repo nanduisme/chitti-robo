@@ -58,11 +58,11 @@ class askCog(commands.Cog):
         drawing = ImageDraw.Draw(image)
         
         drawing.text((person.x, person.y), quote, font=font, fill=person.color)
-        image.save("Tempquote.png")
+        image.save("ask/Tempquote.png")
 
-        output = discord.File('Tempquote.png')
+        output = discord.File('ask/Tempquote.png')
         embed = discord.Embed(title=f'{person.name.upper()} HAS SPOKEN', description=' ', color=PURPLE)
-        embed.set_image(url='attachment://Tempquote.png')
+        embed.set_image(url='attachment://ask/Tempquote.png')
         embed.set_footer(text=f'~{person.name}, {year}')
 
         await ctx.reply(file=output, embed=embed, mention_author=False)
