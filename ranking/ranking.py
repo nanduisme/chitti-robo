@@ -50,27 +50,21 @@ class Cog(commands.Cog):
     def check_guild(self, guild, author):
         if not author.bot:
             guild_id = str(guild.id)
-            author_id = str(author.id)
-
             if guild_id in data['tier']:
+                author_id = str(author.id)
+
                 if author_id not in data['tier'][guild_id]:
                     self.reg_member(guild, author)
-            elif guild_id not in data['tier']:
+            else:
                 self.reg_guild(guild, author)
 
     def decode_mention(self, mention: str):
         mention = mention.replace('<', '')
         mention = mention.replace('@', '')
+        mention = mention.replace('#', '')
         mention = mention.replace('>', '')
         mention = mention.replace('!', '')
         return mention
-
-    def decode_channel(self, channel: str):
-        channel = channel.replace('<', '')
-        channel = channel.replace('#', '')
-        channel = channel.replace('>', '')
-        channel = channel.replace('!', '')
-        return channel
 
     def member_exists(self, mention, guild):
         mention = self.decode_mention(mention)
@@ -83,12 +77,10 @@ class Cog(commands.Cog):
         if server.get_member(int(mention)) is None:
             return False
 
-        else:
-            member = server.get_member(int(mention))
-            data['tier'] = self.get_data['tier']()
+        member = server.get_member(int(mention))
 
-            if str(member.id) not in data['tier'][str(guild.id)] and not member.bot:
-                self.reg_member(guild, member)
+        if str(member.id) not in data['tier'][str(guild.id)] and not member.bot:
+            self.reg_member(guild, member)
 
         return True
 
@@ -103,11 +95,11 @@ class Cog(commands.Cog):
 
     def get_rank(self, guild, name):
         members = []
-        for member in data['tier']:
+        for member in data['tier'][guild.id]:
             if member == 'excluded_channels':
                 continue
-            elif data['tier'][member]['score'] > 0:
-                members.append((data['tier'][member]['name'], data['tier'][member]['score']))
+            elif data['tier'][guild.id][member]['score'] > 0:
+                members.append((data['tier'][guild.id][member]['name'], data['tier'][guild.id][member]['score']))
 
         members = self.sort_members(members)
         members.reverse()
@@ -142,11 +134,10 @@ class Cog(commands.Cog):
     async def score(self, ctx: Context, member=None):
         if member is None:
             member = ctx.author
+        elif self.member_exists(member, ctx.guild):
+            member = ctx.guild.get_member(int(self.decode_mention(member)))
         else:
-            if self.member_exists(member, ctx.guild):
-                member = ctx.guild.get_member(int(self.decode_mention(member)))
-            else:
-                await ctx.send(f'Member "{member}" does not exist in this server')
+            await ctx.send(f'Member "{member}" does not exist in this server')
 
         if member.bot:
             await ctx.send('Doesnt work with bots, mate. :/')
@@ -241,11 +232,11 @@ class Cog(commands.Cog):
     async def leaderboard(self, ctx, page_number=1):
         self.check_guild(ctx.guild, ctx.author)
         members = []
-        for member in data['tier']:
+        for member in data['tier'][ctx.guild.id]:
             if member == 'excluded_channels':
                 continue
-            elif data['tier'][member]['score'] > 0:
-                members.append((data['tier'][member]['name'], data['tier'][member]['score']))
+            elif data['tier'][ctx.guild.id][member]['score'] > 0:
+                members.append((data['tier'][ctx.guild.id][member]['name'], data['tier'][ctx.guild.id][member]['score']))
 
         members = self.sort_members(members)
         members.reverse()
