@@ -95,11 +95,11 @@ class Cog(commands.Cog):
 
     def get_rank(self, guild, name):
         members = []
-        for member in data['tier'][guild.id]:
+        for member in data['tier'][str(guild.id)]:
             if member == 'excluded_channels':
                 continue
-            elif data['tier'][guild.id][member]['score'] > 0:
-                members.append((data['tier'][guild.id][member]['name'], data['tier'][guild.id][member]['score']))
+            elif data['tier'][str(guild.id)][member]['score'] > 0:
+                members.append((data['tier'][str(guild.id)][member]['name'], data['tier'][str(guild.id)][member]['score']))
 
         members = self.sort_members(members)
         members.reverse()
@@ -232,11 +232,11 @@ class Cog(commands.Cog):
     async def leaderboard(self, ctx, page_number=1):
         self.check_guild(ctx.guild, ctx.author)
         members = []
-        for member in data['tier'][ctx.guild.id]:
+        for member in data['tier'][str(ctx.guild.id)]:
             if member == 'excluded_channels':
                 continue
-            elif data['tier'][ctx.guild.id][member]['score'] > 0:
-                members.append((data['tier'][ctx.guild.id][member]['name'], data['tier'][ctx.guild.id][member]['score']))
+            elif data['tier'][str(ctx.guild.id)][member]['score'] > 0:
+                members.append((data['tier'][str(ctx.guild.id)][member]['name'], data['tier'][str(ctx.guild.id)][member]['score']))
 
         members = self.sort_members(members)
         members.reverse()
