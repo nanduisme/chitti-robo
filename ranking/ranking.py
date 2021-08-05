@@ -161,7 +161,7 @@ class Cog(commands.Cog):
             channel = await self.bot.wait_for('message')
 
         if '<#' in channel and '>' in channel:
-            channel = ctx.guild.get_channel(int(self.decode_channel(channel)))
+            channel = ctx.guild.get_channel(int(self.decode_mention(channel)))
 
         else:
             await ctx.send('Channel not found.')
@@ -267,6 +267,10 @@ class Cog(commands.Cog):
         if page not in pages:
             pages.append(page)
             page = []
+
+        for p in pages:
+            if len(p) < 1:
+                pages.remove(p)
 
         page_str = ''
         page_count = len(pages)
