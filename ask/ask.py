@@ -11,25 +11,33 @@ PURPLE = 0x510490
 
 class Quoted:
     def __init__(self, name, file, x, y, size, color):
-        self.name = name 
+        self.name = name
         self.file = file
         self.x = x
         self.y = y
         self.size = size
         self.color = color
 
-alex_ham = Quoted('Alexander Hamilton', 'ask/Images/alexander_hamilton.png', 50, 100, 65, BLACK)
-chinese_emp = Quoted('Random Chinese Emporer', 'ask/Images/constantine.png', 75, 100, 75, BLACK)
+
+alex_ham = Quoted('Alexander Hamilton',
+                  'ask/Images/alexander_hamilton.png', 50, 100, 65, BLACK)
+chinese_emp = Quoted('Random Chinese Emporer',
+                     'ask/Images/constantine.png', 75, 100, 75, BLACK)
 disney = Quoted('Walt Disney', 'ask/Images/disney.png', 20, 250, 40, BLACK)
-dumbledore = Quoted('Albus Dumbledore', 'ask/Images/dumbledore.png', 400, 50, 50, WHITE)
+dumbledore = Quoted('Albus Dumbledore',
+                    'ask/Images/dumbledore.png', 400, 50, 50, WHITE)
 edison = Quoted('Thomas Edison', 'ask/Images/edison.png', 40, 50, 50, BLACK)
-einstien = Quoted('Albert Einstien', 'ask/Images/einstien.png', 300, 100, 50, WHITE)
+einstien = Quoted('Albert Einstien',
+                  'ask/Images/einstien.png', 300, 100, 50, WHITE)
 hitler = Quoted('Adolf Hitler', 'ask/Images/hitler.png', 50, 50, 60, BLACK)
 oogway = Quoted('Master Ooogway', 'ask/Images/oogway.png', 350, 25, 40, BLACK)
-sachin = Quoted('Sachin Tendulkar', 'ask/Images/sachin.png', 200, 25, 40, BLACK)
+sachin = Quoted('Sachin Tendulkar',
+                'ask/Images/sachin.png', 200, 25, 40, BLACK)
 trump = Quoted('Donald Trump', 'ask/Images/trump.png', 350, 25, 40, BLACK)
 
-people = [trump, alex_ham, chinese_emp, disney, dumbledore, edison, einstien, hitler, oogway, sachin]
+people = [trump, alex_ham, chinese_emp, disney,
+          dumbledore, edison, einstien, hitler, oogway, sachin]
+
 
 class askCog(commands.Cog):
     def __init__(self, bot):
@@ -56,12 +64,13 @@ class askCog(commands.Cog):
         font = ImageFont.truetype(font, person.size)
         image = Image.open(person.file)
         drawing = ImageDraw.Draw(image)
-        
+
         drawing.text((person.x, person.y), quote, font=font, fill=person.color)
         image.save("ask/Tempquote.png")
 
         output = discord.File('ask/Tempquote.png')
-        embed = discord.Embed(title=f'{person.name.upper()} HAS SPOKEN', description=' ', color=PURPLE)
+        embed = discord.Embed(
+            title=f'{person.name.upper()} HAS SPOKEN', description=' ', color=PURPLE)
         embed.set_image(url='attachment://ask/Tempquote.png')
         embed.set_footer(text=f'~{person.name}, {year}')
 

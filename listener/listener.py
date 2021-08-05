@@ -1,5 +1,4 @@
 from discord.ext import commands
-import json
 import random
 from replit import db as data
 
@@ -27,9 +26,8 @@ class Listener(commands.Cog):
                     if ' ' in key:
                         if key in message.content.lower():
                             await message.channel.send(random.choice(data['listener'][guild]['replies'][key]))
-                    elif ' ' not in key:
-                        if key in message.content.lower().split():
-                            await message.channel.send(random.choice(data['listener'][guild]['replies'][key]))
+                    elif key in message.content.lower().split():
+                        await message.channel.send(random.choice(data['listener'][guild]['replies'][key]))
         except:
             pass
 
@@ -41,7 +39,7 @@ class Listener(commands.Cog):
         if guild not in data['listener']:
             data['listener'][guild] = {
                 'replies': {},
-                'active_keys':[],
+                'active_keys': [],
                 'is_enabled': True
             }
 
@@ -50,14 +48,14 @@ Use `$help listener` to see all subcommands```''')
 
     @listener.command(name='add')
     @commands.guild_only()
-    async def add_listener(self, ctx, *keys):
+    async def add_listener(self, ctx, *keys):  # sourcery no-metrics
         guild = str(ctx.guild.id)
         key = ' '.join(map(str, keys))
 
         if guild not in data['listener']:
             data['listener'][guild] = {
                 'replies': {},
-                'active_keys':[],
+                'active_keys': [],
                 'is_enabled': True
             }
 
@@ -176,7 +174,7 @@ Use `$help listener` to see all subcommands```''')
         for key in data['listener'][guild]['replies']:
             if key in data['listener'][guild]['active_keys']:
                 active_keys.append(key)
-            elif key not in data['listener'][guild]['active_keys']:
+            else:
                 inactive_keys.append(key)
 
         active_keys_show = ''
@@ -290,13 +288,14 @@ INACTIVE KEYS:
             if response.lower() == 'n':
                 await ctx.send('Command cancelled')
                 return
-            
+
             await ctx.send(f'Key "{key}" and all its response has been deleted.')
             del data['listener'][guild]['replies'][key]
 
         data['listener'][guild]['replies'][key].remove(replies[idx])
 
         await ctx.send(f'The response has been removed from key "{key}"')
+
 
 def setup(bot):
     bot.add_cog(Listener(bot))

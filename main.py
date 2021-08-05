@@ -5,7 +5,7 @@ from keep_alive import keep_alive
 
 
 def get_prefix(bot, message):
-    prefixes = ['do ', '$', 'chitti ']
+    prefixes = ['do ', '$', 'chitti ', '/']
 
     if not message.guild:
         return '$'

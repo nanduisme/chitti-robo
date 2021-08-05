@@ -8,6 +8,7 @@ def ai_choice():
     elif choice_number == 3:
         return "scissors"
 
+
 def win_logic(ai, player_choice):
     if player_choice == "rock":
         if ai == "rock":

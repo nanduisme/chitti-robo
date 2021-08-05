@@ -6,10 +6,11 @@ from replit import db as data
 
 PURPLE = 0x510490
 
+
 class Cog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-    
+
     def sort_members(self, members):
         sorted_list = []
         for member in members:
@@ -84,13 +85,13 @@ class Cog(commands.Cog):
 
         return True
 
-    def make_three_digit(self, num:int):
+    def make_three_digit(self, num: int):
         num = str(num)
         if len(num) == 1:
             num = f'00{num}'
         elif len(num) == 2:
             num = f'0{num}'
-        
+
         return num
 
     def get_rank(self, guild, name):
@@ -99,7 +100,8 @@ class Cog(commands.Cog):
             if member == 'excluded_channels':
                 continue
             elif data['tier'][str(guild.id)][member]['score'] > 0:
-                members.append((data['tier'][str(guild.id)][member]['name'], data['tier'][str(guild.id)][member]['score']))
+                members.append((data['tier'][str(
+                    guild.id)][member]['name'], data['tier'][str(guild.id)][member]['score']))
 
         members = self.sort_members(members)
         members.reverse()
@@ -108,7 +110,7 @@ class Cog(commands.Cog):
         for member in members:
             if member[0] == name:
                 rank = members.index(member)
-        
+
         return rank + 1
 
     @commands.Cog.listener()
@@ -122,8 +124,10 @@ class Cog(commands.Cog):
         if message.channel.id in data['tier'][str(message.guild.id)]['excluded_channels']:
             return
 
-        data['tier'][str(message.guild.id)][str(message.author.id)]['name'] = message.author.name
-        data['tier'][str(message.guild.id)][str(message.author.id)]['score'] += 1
+        data['tier'][str(message.guild.id)][str(
+            message.author.id)]['name'] = message.author.name
+        data['tier'][str(message.guild.id)][str(
+            message.author.id)]['score'] += 1
 
     @commands.group(name='tier', invoke_without_command=True)
     @commands.guild_only()
@@ -149,12 +153,13 @@ class Cog(commands.Cog):
         embed.set_thumbnail(url=member.avatar_url)
         embed.add_field(name='Messaging Score',
                         value=f'Your messaging score is `{data["tier"][str(ctx.guild.id)][str(member.id)]["score"]}`.')
-        embed.add_field(name='Rank', value=f'Your rank in this server is `{self.get_rank(ctx.guild, str(member.name))}`')
+        embed.add_field(
+            name='Rank', value=f'Your rank in this server is `{self.get_rank(ctx.guild, str(member.name))}`')
         await ctx.reply(embed=embed, mention_author=False)
 
     @tier.command()
     @commands.has_permissions(administrator=True)
-    async def exclude(self, ctx:Context, channel=None):
+    async def exclude(self, ctx: Context, channel=None):
         self.check_guild(ctx.guild, ctx.author)
         if channel is None:
             await ctx.send(f'What channel would you like scores to be not counted from?')
@@ -169,14 +174,14 @@ class Cog(commands.Cog):
 
         if channel.id in data['tier'][str(ctx.guild.id)]['excluded_channels']:
             await ctx.send(f'Channel {channel.mention} is already excluded from coutning scores.')
-            return 
-        
+            return
+
         data['tier'][str(ctx.guild.id)]['excluded_channels'].append(channel.id)
 
         await ctx.send(f'Messages in channel {channel.mention} will no longer add your score.')
 
     @exclude.error
-    async def exclude_error(self, ctx:Context, error):
+    async def exclude_error(self, ctx: Context, error):
         if isinstance(error, commands.MissingPermissions):
             await ctx.send('You do not have the clearance level to use this command.')
         if isinstance(error, commands.CommandInvokeError):
@@ -198,8 +203,8 @@ class Cog(commands.Cog):
 
         if channel.id not in data['tier'][str(ctx.guild.id)]['excluded_channels']:
             await ctx.send(f'Channel {channel.mention} is already included from counting scores.')
-            return 
-        
+            return
+
         data['tier'][str(ctx.guild.id)]['excluded_channels'].remove(channel.id)
 
         await ctx.send(f'Messages in channel {channel.mention} will now add your score.')
@@ -212,10 +217,11 @@ class Cog(commands.Cog):
             await ctx.send('Channel not found.')
 
     @tier.command(aliases=['list'])
-    async def excluded(self, ctx:Context):
+    async def excluded(self, ctx: Context):
         self.check_guild(ctx.guild, ctx.author)
         channels = data['tier'][str(ctx.guild.id)]['excluded_channels']
-        embed = discord.Embed(title='Excluded Channels', description='List of channels excluded from increasing messaging scores.', color=PURPLE)
+        embed = discord.Embed(title='Excluded Channels',
+                              description='List of channels excluded from increasing messaging scores.', color=PURPLE)
         if len(channels) > 0:
             excluded_channels = ''
             for channel in channels:
@@ -224,7 +230,7 @@ class Cog(commands.Cog):
             embed.add_field(name='List:', value=excluded_channels)
         else:
             embed.add_field(name='List:', value='No channels are excluded.')
-        
+
         await ctx.reply(embed=embed, mention_author=False)
         return
 
@@ -236,12 +242,14 @@ class Cog(commands.Cog):
             if member == 'excluded_channels':
                 continue
             elif data['tier'][str(ctx.guild.id)][member]['score'] > 0:
-                members.append((data['tier'][str(ctx.guild.id)][member]['name'], data['tier'][str(ctx.guild.id)][member]['score']))
+                members.append((data['tier'][str(ctx.guild.id)][member]['name'], data['tier'][str(
+                    ctx.guild.id)][member]['score']))
 
         members = self.sort_members(members)
         members.reverse()
 
-        embed = discord.Embed(title='**LEADERBOARD**', description='Leaderboard of messaging scores for this server.', color=PURPLE)
+        embed = discord.Embed(
+            title='**LEADERBOARD**', description='Leaderboard of messaging scores for this server.', color=PURPLE)
         pages = []
         rank = 1
         page = []
@@ -257,13 +265,14 @@ class Cog(commands.Cog):
             elif rank > 3 and rank < 11:
                 medal = '🎖'
 
-            page.append(f'{self.make_three_digit(rank)} ∙ {member[0]}{medal} [{member[1]}]')
+            page.append(
+                f'{self.make_three_digit(rank)} ∙ {member[0]}{medal} [{member[1]}]')
             if len(page) == 10:
                 pages.append(page)
-                page=[]
-            
+                page = []
+
             rank += 1
-        
+
         if page not in pages:
             pages.append(page)
             page = []
@@ -278,19 +287,21 @@ class Cog(commands.Cog):
             page_str += member + '\n'
 
         embed.add_field(name='Rank∙ Name [Score]', value='```'+page_str+'```')
-        embed.set_footer(text=f'Showing page ({page_number}/{len(pages)}).\nUse {ctx.prefix}tier {ctx.invoked_with} <page number>.')
+        embed.set_footer(
+            text=f'Showing page ({page_number}/{len(pages)}).\nUse {ctx.prefix}tier {ctx.invoked_with} <page number>.')
 
         await ctx.reply(embed=embed, mention_author=False)
 
     @leaderboard.error
     async def lb_error(self, ctx, error):
         if isinstance(error, commands.CommandInvokeError):
-            embed = discord.Embed(title='Error 404', description='Page not found', color=PURPLE)
+            embed = discord.Embed(
+                title='Error 404', description='Page not found', color=PURPLE)
             await ctx.reply(embed=embed, mention_author=False)
 
     @tier.command()
     @commands.has_permissions(administrator=True)
-    async def deduct(self, ctx:Context, member=None):
+    async def deduct(self, ctx: Context, member=None):
         self.check_guild(ctx.guild, ctx.author)
         if member is None:
             await ctx.send(f'Mention the member you would like to deduce points from.')
@@ -299,7 +310,7 @@ class Cog(commands.Cog):
 
         if '<@' in member and '>' in member:
             member = ctx.guild.get_member(int(self.decode_mention(member)))
-            
+
         else:
             await ctx.send('Member not found.')
             return
@@ -336,6 +347,7 @@ class Cog(commands.Cog):
     async def deduct_error(self, ctx, error):
         if isinstance(error, commands.MissingPermissions):
             await ctx.send('You do not have the clearance level to use this command.')
+
 
 def setup(bot):
     bot.add_cog(Cog(bot))

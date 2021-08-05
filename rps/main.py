@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 
+
 class RPScog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -11,9 +12,10 @@ class RPScog(commands.Cog):
         channel = ctx.channel
 
         await ctx.send('reply `a` if you would like to play alone')
+
         def check(m):
             return m.content == 'a' and m.channel == channel and m.author == ctx.author
-            
+
         await self.bot.wait_for('message', check=check)
 
         await ctx.send(f'So, it is {p1.mention} vs ME! Let the Game Begin!')
@@ -49,7 +51,7 @@ class RPScog(commands.Cog):
                 await ctx.send(f'{pchoice.content.upper()}({p1.mention}) **VS** {randchoice.upper()}(BOT))')
                 await ctx.send('IT WAS A DRAW! ')
                 await ctx.send(f'''`SCORE: {p1_score}(YOU) - {ai_score}(BOT)`''')
-                    
+
             if ai_score == 5 or p1_score == 5:
                 winner = None
                 if ai_score > p1_score:
@@ -58,6 +60,7 @@ class RPScog(commands.Cog):
                     winner = 'You'
                 await ctx.send(f'GAME OVER! {winner} won! Final scores: {p1_score} - {ai_score}')
                 break
+
 
 def setup(bot):
     bot.add_cog(RPScog(bot))
