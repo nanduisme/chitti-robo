@@ -31,6 +31,7 @@ class Cog(commands.Cog):
 
     @commands.group(name='help', invoke_without_command=True)
     async def help(self, ctx, group=None, subcommand=None):
+        # sourcery no-metrics
         math = CommandGroup('**🤓 Math**',
                             f'`{ctx.prefix}help math`',
                             'math')

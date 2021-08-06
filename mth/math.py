@@ -16,7 +16,7 @@ class Math(commands.Cog):
         show = ''
         for x in nums:
             sum += x
-            show = show + f'{str(x)} + '
+            show += f'{str(x)} + '
 
         await ctx.send(f'{show[:-2]} = {sum}')
 
@@ -32,12 +32,12 @@ class Math(commands.Cog):
         show = ''
         for x in nums:
             product *= x
-            show = show + f'{str(x)} x '
+            show += f'{str(x)} x '
 
         await ctx.send(f'{show[:-2]} = {product}')
 
     @commands.command(name='subtract')
-    async def sub(self, ctx, first:int=None, second:int=None):
+    async def sub(self, ctx, first:float=None, second:float=None):
         if first == None or second == None:
             await ctx.send('Please input 2 values. For eg: `$subtract 2 3`')
         else:
@@ -77,10 +77,7 @@ class Math(commands.Cog):
         return sorted_list
 
     def add_list(self, nums: list):
-        sum = 0
-        for num in nums:
-            sum += num
-        return sum
+        return sum(nums)
 
     @commands.command()
     async def mean(self, ctx, *nums):
@@ -114,7 +111,7 @@ class Math(commands.Cog):
         await ctx.send(f'The median of `{sorted_nums}` is : `{median}`.')
 
     @commands.command()
-    async def mode(self, ctx, *nums):
+    async def mode(self, ctx, *nums):  # sourcery no-metrics
         try:
             nums = [float(num) for num in nums]
         except:
@@ -128,7 +125,10 @@ class Math(commands.Cog):
                 if num == element:
                     count += 1
 
-                    if len(modes) !=0:
+                    if not modes:
+                        modes.append([num, count])
+
+                    else:
                         for mode in modes:
                             m = [m[0] for m in modes]
                             if count >= mode[1]:
@@ -137,13 +137,8 @@ class Math(commands.Cog):
                                     for e in modes:
                                         if count > e[1]:
                                             modes.remove(e)
-                                elif [num, count] in modes:
-                                    pass
-                                else:
+                                elif [num, count] not in modes:
                                     modes.append([num, count])
-                    else:
-                        modes.append([num, count])
-            
         count = modes[0][1]
         modes = [mode[0] for mode in modes]
         many = '(s)' if len(modes) > 1 else ''
