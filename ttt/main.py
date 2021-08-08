@@ -1,5 +1,7 @@
 from discord.ext import commands
+import discord
 
+PURPLE = 0x510490
 
 class TTT(commands.Cog):
     def __init__(self, bot):
@@ -9,8 +11,7 @@ class TTT(commands.Cog):
             ['b1', 'b2', 'b3'],
             ['c1', 'c2', 'c3']
         ]
-        self.moveset = ['a1', 'a2', 'a3', 'b1',
-                        'b2', 'b3', 'c1', 'c2', 'c3', 'end']
+        self.moveset = ['a1', 'a2', 'a3', 'b1', 'b2', 'b3', 'c1', 'c2', 'c3']
         self.p1 = None
         self.player = self.p1
         self.check_board = [
@@ -20,9 +21,9 @@ class TTT(commands.Cog):
         ]
 
     def read_board(self, board):
-        empty = ':white_circle:'
-        p1 = ':x:'
-        p2 = ':o:'
+        empty = ':black_square_button:'
+        p1 = ':negative_squared_cross_mark:'
+        p2 = ':o2:'
 
         print_str = ''
 
@@ -77,6 +78,9 @@ class TTT(commands.Cog):
 
                     return x, y
 
+    def get_grid(self):
+        pass
+
     @commands.command(name='ttt', aliases=['tictactoe', 'xo'])
     @commands.guild_only()
     async def ttt(self, ctx, p2=None):  # sourcery no-metrics
@@ -91,7 +95,7 @@ class TTT(commands.Cog):
             [0, 0, 0]
         ]
 
-        if self.p2 == None:
+        if self.p2 is None:
             await ctx.send('Please mention Player 2. For Eg: `$xo @mark`')
             return
 
@@ -109,38 +113,61 @@ class TTT(commands.Cog):
             return
 
         if self.p2.bot:
-            await ctx.send(f'You play with a bot, silly!')
+            bot_embed = discord.Embed(title='Oopsie!', description='You cant play with a bot man... bots are pretty dumb.', color=PURPLE)
+            bot_embed.set_footer(text='LOL lonely ass.')
+            await ctx.reply(embed=bot_embed, mention_author=False)
             return
 
         if self.p2 == self.p1:
-            await ctx.send('You cant play with yourself!')
+            self_embed = discord.Embed(title='Oopsie!', description='You cant play with yourself, silly!', color=PURPLE)
+            self_embed.set_footer(text='LOL lonely ass.')
+            await ctx.reply(embed=self_embed, mention_author=False)
             return
-
-        await ctx.send(self.read_board(self.board))
-        await ctx.send(f'{self.p1.mention} VS {self.p2.mention}')
 
         p1_turn = True
         self.player = self.p1 if p1_turn else self.p2
 
-        def check(m):
-            return m.author == self.player and m.content in self.moveset
+            
+        def play_check(m):
+            return m.content.lower() in (self.moveset + ['help', 'end']) and m.author == self.player
 
         while True:
-            self.player = self.p1 if p1_turn else self.p2
-            await ctx.send(f'{self.player.mention}, your turn! Type in the position you want your marker to be in.')
-            await ctx.send('''```
-For Eg. your board would look like
-a1 | a2 | a3
----+----+---
-b1 | b2 | b3
----+----+---
-c1 | c2 | c3
-            
-Type 'end' to end the game.```''')
-            play = await self.bot.wait_for('message', check=check)
+            timeout_embed = discord.Embed(title='Aw Man :(', description=f'{self.player.display_name} didnt respond in time :/. GAME OVER.', color=PURPLE)
 
+            self.player = self.p1 if p1_turn else self.p2
+            embed = discord.Embed(
+                title=f'{self.p1.display_name} VS {self.p2.display_name}', 
+                description=f'{self.player.mention}. Its your turn \n\n'+self.read_board(self.board) + f'\n\n`Type in the position you want your marker on, {self.player.display_name}.`', 
+                color=PURPLE
+                )
+            embed.set_footer(text=f'Type in "help" for showing the grid of posistions and "end" to end the game.')
+
+            await ctx.send(embed=embed)
+
+            while True:
+                try:
+                    play = await self.bot.wait_for('message', check=play_check, timeout=30)
+                except:
+                    await ctx.send(embed=timeout_embed)
+                    return
+
+                if play.content.lower() != 'help':
+                    break
+
+                grid = '''```
+a1 | a2 | a3
+------------
+b1 | b2 | b3
+------------
+c1 | c2 | c3```'''
+                help_embed = discord.Embed(title='THE GRID', description=grid, color=PURPLE)
+                help_embed.set_footer(text=f'Type in "help" for this message and "end" to end the game.\nType in the position you want your marker on, {self.player.display_name}.')
+                await ctx.send(embed=help_embed)
+                
             if play.content.lower() == 'end':
-                await ctx.send(f'{self.player.mention} ended the game! Boohoo')
+                end_embed = discord.Embed(title='Game Ended :/', description=f'{self.player.mention} ended the game! Boohoo', color=PURPLE)
+                await ctx.send(embed=end_embed)
+
                 break
 
             p = 1 if self.player == self.p1 else 2
@@ -149,17 +176,23 @@ Type 'end' to end the game.```''')
             pos = self.board[posY][posX]
 
             while pos != 0:
-                await ctx.send(f'Uh oh! {play.content} is already taken. Please choose a different position')
+                error_embed = discord.Embed(title='Uh oh :/', description=f'Uh oh! {play.content} is already taken. Please choose a different position', color=PURPLE)
+                await ctx.send(embed=error_embed)
 
-                play = await self.bot.wait_for('message', check=check)
+                try:
+                    play = await self.bot.wait_for('message', check=play_check, timeout=30)
+                except:
+                    await ctx.send(embed=timeout_embed)
+                    return
+
                 posX, posY = self.get_element(play.content)
                 pos = self.board[posY][posX]
 
             self.board[posY][posX] = p
-            await ctx.send(self.read_board(self.board))
 
             if self.check_win(self.player):
-                await ctx.send(f'{self.player.mention} WON!')
+                win_embed = discord.Embed(title='YOU WON!', description=f'{self.player.mention} WON THE GAME!! GG!!\n'+self.read_board(self.board), color=PURPLE)
+                await ctx.send(embed=win_embed)
                 break
 
             board1d = []
@@ -169,7 +202,8 @@ Type 'end' to end the game.```''')
                     board1d.append(e)
 
             if 0 not in board1d:
-                await ctx.send(f'Its a DRAW!')
+                draw_embed = discord.Embed(title='ITS A DRAW!', description='GG guys! It was a Draw!!\n'+self.read_board(self.board), color=PURPLE)
+                await ctx.send(embed=draw_embed)
                 break
 
             p1_turn = not p1_turn
