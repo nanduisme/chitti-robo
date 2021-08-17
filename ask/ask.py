@@ -99,4 +99,4 @@ def setup(bot):
     bot.add_cog(askCog(bot))
 
 
-# YAY! Thats it for the ask cog.
+# YAY! Thats it for the ask cog. We'll walk through /mth/math.py next :).
