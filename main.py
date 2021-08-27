@@ -62,6 +62,21 @@ async def on_ready():
 # Calls keep_alive function to keep the bot alive. Obviously.
 keep_alive()
 
+import json
+from replit import db
+with open('cc.json', 'w') as f:
+    database = db['listener']
+    data = {
+        guild : {
+            'active_keys' : [*database[guild]['active_keys']],
+            'replies' : {
+                command : [*database[guild]['replies'][command]] for command in database[guild]['replies']
+            },
+            'is_enabled' : bool(database[guild]['is_enabled'])
+        } for guild in database 
+    }
+    json.dump(data, f)
+
 # Runs the bot instance
 bot.run(
     os.environ[
