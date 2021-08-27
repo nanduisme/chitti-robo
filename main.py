@@ -62,13 +62,6 @@ async def on_ready():
 # Calls keep_alive function to keep the bot alive. Obviously.
 keep_alive()
 
-import json
-from replit import db
-with open('cc.json', 'w') as f:
-    data = json.load(f)
-    for key in data:
-        db[key] = data[key]
-
 # Runs the bot instance
 bot.run(
     os.environ[
