@@ -164,18 +164,63 @@ class CustomCommandEmbeds:
         def key_not_found(key, prefix):
             return discord.Embed(
                 title="Huh?",
-                description = f"I cant seem to find the key, `{key}` you're talking about :/"
-            ).set_footer(
-                text = 'Use `{prefix}cc show` to make sure it actually exists.'
-            )
+                description=f"I cant seem to find the key, `{key}` you're talking about :/",
+            ).set_footer(text="Use `{prefix}cc show` to make sure it actually exists.")
 
         @staticmethod
         def show_key(key, guild):
             return discord.Embed(
                 title=f"All replies for key `{key}`",
                 description="".join(
-                    f'{guild.replies[key].index(reply) + 1} : `{reply}` \n'
+                    f"{guild.replies[key].index(reply) + 1} : `{reply}` \n"
                     for reply in guild.replies[key]
                 ),
-                color=PURPLE
+                color=PURPLE,
+            )
+
+
+class MessagingScoreEmbeds:
+    """Embeds for messaging score cog"""
+
+    class Score:
+        """ms score"""
+
+        @staticmethod
+        def invalid_mention(mention):
+            return discord.Embed(
+                title="Bruh",
+                description=f"`{mention}` is not a valid mention!",
+                color=RED,
+            )
+
+        @staticmethod
+        def member_not_found(mention):
+            return discord.Embed(
+                title="Who?",
+                description=f"I cant find a `{mention}` on this server. :/",
+            )
+
+        @staticmethod
+        def show_score(name: str, avatar: str, score: int, rank: int):
+            embed = discord.Embed(title=name)
+            embed.set_thumbnail(url=avatar)
+            embed.add_field(
+                name="Messaging Score",
+                value=f"Your messaging score is `{score}`.",
+            )
+            embed.add_field(
+                name="Rank",
+                value=f"Your rank in this server is `{rank}`",
+            )
+            return embed
+
+    class Lb:
+        """ms lb"""
+
+        @staticmethod
+        def page_not_found():
+            return discord.Embed(
+                title = 'Where is that...?',
+                description = 'Page not found!',
+                color = RED
             )
