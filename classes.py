@@ -41,6 +41,9 @@ class Member:
     display_name: str
     score: int = field(default=0, compare=False)
 
+    # For Games
+    is_playing: bool = False
+
     @property
     def mention(self):
         return f'<@{self.id}>'
@@ -51,4 +54,4 @@ class Member:
     def get_rank(self, guild: Guild):
         self = asdict(self)
         leaderboard = guild.get_leaderboard()
-        return (leaderboard.index(self) + 1) if self in guild.get_leaderboard() else 0
+        return (leaderboard.index(self) + 1) if self['score'] > 0 else 0

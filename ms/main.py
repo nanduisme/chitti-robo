@@ -134,18 +134,9 @@ class Cog(commands.Cog):
 
         self.dump(guild, member)
 
-    # Parent
-    @commands.group(aliases=["tier"], invoke_without_command=True)
-    async def ms(self, ctx: Context):
-        """Parent Command For Messaging Scores Subcommands"""
-
-        await ctx.reply(
-            "Uh oh! Cannot use command without a valid subcommand!",
-            mention_author=False,
-        )
 
     # Score
-    @ms.command()
+    @commands.command(aliases=["s", "rank"])
     async def score(self, ctx: Context, mention: str = None):
         """Shows score of user if mentioned else shows score of invoker."""
 
@@ -169,7 +160,7 @@ class Cog(commands.Cog):
         )
 
     # Leaderboard
-    @ms.command(aliases=["leaderboard", "board"])
+    @commands.command(aliases=["leaderboard", "board", "ranklist", "l"])
     async def lb(self, ctx: Context, page_no: int = None):
         """Shows messaging score leaderboard for the server"""
 
@@ -205,7 +196,7 @@ class Cog(commands.Cog):
         return
 
     # Exclude
-    @ms.command()
+    @commands.command(aliases=["exc"])
     @commands.has_permissions(administrator = True)
     async def exclude(self, ctx: Context, channel= None):
         """Excludes a channel from adding up messaginf scores."""
@@ -245,7 +236,7 @@ class Cog(commands.Cog):
             await ctx.send("❌ Channel not found.")
 
     # Include
-    @ms.command()
+    @commands.command(aliases=['inc'])
     async def include(self, ctx: Context, channel = None):
         """Includes a channel for adding up messaging scores."""
 
@@ -282,7 +273,7 @@ class Cog(commands.Cog):
             await ctx.send("❌ Channel not found.")
 
     # Excluded
-    @ms.command(alisases=["list"])
+    @commands.command(aliases=["ec", "channels"])
     async def excluded(self, ctx: Context):
         """Shows channels excluded from messaging scores."""
 
@@ -306,8 +297,8 @@ class Cog(commands.Cog):
         return
 
     # Deduct
-    @ms.command()
-    @commands.has_permission(administrator=True)
+    @commands.command(aliases=["take"])
+    @commands.has_permissions(administrator=True)
     async def deduct(self, ctx: Context, mention = None):
         """Deducts points from a member."""
 

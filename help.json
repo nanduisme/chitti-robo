@@ -1,0 +1,379 @@
+{
+    "groups": {
+        "🎮 Fun": [
+            "ttt",
+            "rps",
+            "ask"
+        ],
+        "➕ Math": [
+            "add",
+            "sub",
+            "mult",
+            "div",
+            "mean",
+            "median",
+            "mode"
+        ],
+        "🤖 Custom Commands": [
+            "on",
+            "off",
+            "new",
+            "remove",
+            "toggle",
+            "cc"
+        ],
+        "🥇 Messaging Scores": [
+            "score",
+            "lb",
+            "exc",
+            "inc",
+            "channels",
+            "take"
+        ],
+        "✨ Misc": [
+            "coolbot"
+        ]
+    },
+    "commands": {
+        "ttt": {
+            "syntax": "<@user>",
+            "help": "Play a game of Tic Tac Toe!",
+            "aliases": [
+                "tictactoe",
+                "xo"
+            ]
+        },
+        "tictactoe": {
+            "syntax": "<@user>",
+            "help": "Play a game of Tic Tac Toe!",
+            "aliases": [
+                "ttt",
+                "xo"
+            ]
+        },
+        "xo": {
+            "syntax": "<@user>",
+            "help": "Play a game of Tic Tac Toe!",
+            "aliases": [
+                "tictactoe",
+                "ttt"
+            ]
+        },
+        "rps": {
+            "syntax": "",
+            "help": "Play a Game of rock paper scissors with me!",
+            "aliases": []
+        },
+        "ask": {
+            "syntax": "<question>",
+            "help": "Ask a question and get an answer as a quote. from a very famous person. (8ball but better)",
+            "aliases": []
+        },
+        "add": {
+            "syntax": "<num1> <num2> [num3] [num4] ...",
+            "help": "Adds up an infinite list of given numbers.",
+            "aliases": []
+        },
+        "sub": {
+            "syntax": "<num1> <num2>",
+            "help": "Subtracts two given numbers.",
+            "aliases": []
+        },
+        "mult": {
+            "syntax": "<num1> <num2> [num3] [num4] ...",
+            "help": "Multiplies an infinite list of given numbers.",
+            "aliases": []
+        },
+        "div": {
+            "syntax": "<num1> <num2>",
+            "help": "Divides two given numbers.",
+            "aliases": []
+        },
+        "mean": {
+            "syntax": "<num1> [num2] [num3] ...",
+            "help": "Gives the arithmetic mean, or average, of infinite list of numbers.",
+            "aliases": []
+        },
+        "median": {
+            "syntax": "<num1> [num2] [num3] ...",
+            "help": "Gives median of infinite list of numbers.)",
+            "aliases": []
+        },
+        "mode": {
+            "syntax": "<num1> [num2] [num3] ...",
+            "help": "Gives mode of infinite list of numbers.)",
+            "aliases": []
+        },
+        "on": {
+            "syntax": "",
+            "help": "Turns on custom commands for this server.",
+            "aliases": [
+                "listen",
+                "enable"
+            ]
+        },
+        "listen": {
+            "syntax": "",
+            "help": "Turns on custom commands for this server.",
+            "aliases": [
+                "on",
+                "enable"
+            ]
+        },
+        "enable": {
+            "syntax": "",
+            "help": "Turns on custom commands for this server.",
+            "aliases": [
+                "listen",
+                "on"
+            ]
+        },
+        "off": {
+            "syntax": "",
+            "help": "Turns off custom commands for this server.",
+            "aliases": [
+                "deafen",
+                "disable"
+            ]
+        },
+        "deafen": {
+            "syntax": "",
+            "help": "Turns off custom commands for this server.",
+            "aliases": [
+                "off",
+                "disable"
+            ]
+        },
+        "disable": {
+            "syntax": "",
+            "help": "Turns off custom commands for this server.",
+            "aliases": [
+                "deafen",
+                "off"
+            ]
+        },
+        "new": {
+            "syntax": "<command>",
+            "help": "Adds a new custom command or adds a reply to an existing one.",
+            "aliases": [
+                "addcc"
+            ]
+        },
+        "addcc": {
+            "syntax": "<command>",
+            "help": "Adds a new custom command or adds a reply to an existing one.",
+            "aliases": [
+                "new"
+            ]
+        },
+        "remove": {
+            "syntax": "<command>",
+            "help": "Removes a reply from mentioned command.",
+            "aliases": [
+                "r"
+            ]
+        },
+        "r": {
+            "syntax": "<command>",
+            "help": "Removes a reply from mentioned command.",
+            "aliases": [
+                "remove"
+            ]
+        },
+        "toggle": {
+            "syntax": "<command>",
+            "help": "Toggles a command on or off for the whole server.",
+            "aliases": [
+                "t"
+            ]
+        },
+        "t": {
+            "syntax": "<command>",
+            "help": "Toggles a command on or off for the whole server.",
+            "aliases": [
+                "toggle"
+            ]
+        },
+        "cc": {
+            "syntax": "[command]",
+            "help": "Shows all replies for a mentioned command, or all commands if not mentioned.",
+            "aliases": [
+                "show",
+                "list",
+                "all"
+            ]
+        },
+        "show": {
+            "syntax": "[command]",
+            "help": "Shows all replies for a mentioned command, or all commands if not mentioned.",
+            "aliases": [
+                "cc",
+                "list",
+                "all"
+            ]
+        },
+        "list": {
+            "syntax": "[command]",
+            "help": "Shows all replies for a mentioned command, or all commands if not mentioned.",
+            "aliases": [
+                "show",
+                "cc",
+                "all"
+            ]
+        },
+        "all": {
+            "syntax": "[command]",
+            "help": "Shows all replies for a mentioned command, or all commands if not mentioned.",
+            "aliases": [
+                "show",
+                "list",
+                "cc"
+            ]
+        },
+        "score": {
+            "syntax": "[@user]",
+            "help": "Shows your messaging score.",
+            "aliases": [
+                "s",
+                "rank"
+            ]
+        },
+        "s": {
+            "syntax": "[@user]",
+            "help": "Shows your messaging score.",
+            "aliases": [
+                "score",
+                "rank"
+            ]
+        },
+        "rank": {
+            "syntax": "[@user]",
+            "help": "Shows your messaging score.",
+            "aliases": [
+                "s",
+                "score"
+            ]
+        },
+        "lb": {
+            "syntax": "[page]",
+            "help": "Shows the messaging scores leaderboard for the server.",
+            "aliases": [
+                "leaderboard",
+                "board",
+                "ranklist",
+                "l"
+            ]
+        },
+        "leaderboard": {
+            "syntax": "[page]",
+            "help": "Shows the messaging scores leaderboard for the server.",
+            "aliases": [
+                "lb",
+                "board",
+                "ranklist",
+                "l"
+            ]
+        },
+        "board": {
+            "syntax": "[page]",
+            "help": "Shows the messaging scores leaderboard for the server.",
+            "aliases": [
+                "leaderboard",
+                "lb",
+                "ranklist",
+                "l"
+            ]
+        },
+        "ranklist": {
+            "syntax": "[page]",
+            "help": "Shows the messaging scores leaderboard for the server.",
+            "aliases": [
+                "leaderboard",
+                "board",
+                "lb",
+                "l"
+            ]
+        },
+        "l": {
+            "syntax": "[page]",
+            "help": "Shows the messaging scores leaderboard for the server.",
+            "aliases": [
+                "leaderboard",
+                "board",
+                "ranklist",
+                "lb"
+            ]
+        },
+        "exc": {
+            "syntax": "<channel>",
+            "help": "Excludes a channel from adding up score. (needs admin perms)",
+            "aliases": [
+                "exclude"
+            ]
+        },
+        "exclude": {
+            "syntax": "<channel>",
+            "help": "Excludes a channel from adding up score. (needs admin perms)",
+            "aliases": [
+                "exc"
+            ]
+        },
+        "inc": {
+            "syntax": "<channel>",
+            "help": "Includes a channel from adding up score. (needs admin perms)",
+            "aliases": [
+                "include"
+            ]
+        },
+        "include": {
+            "syntax": "<channel>",
+            "help": "Includes a channel from adding up score. (needs admin perms)",
+            "aliases": [
+                "inc"
+            ]
+        },
+        "ec": {
+            "syntax": "",
+            "help": "Shows list of channels excluded from adding score.",
+            "aliases": [
+                "excluded",
+                "channels"
+            ]
+        },
+        "excluded": {
+            "syntax": "",
+            "help": "Shows list of channels excluded from adding score.",
+            "aliases": [
+                "ec",
+                "channels"
+            ]
+        },
+        "channels": {
+            "syntax": "",
+            "help": "Shows list of channels excluded from adding score.",
+            "aliases": [
+                "excluded",
+                "ec"
+            ]
+        },
+        "deduct": {
+            "syntax": "<@user>",
+            "help": "Takes points from mentioned user. (needs admin perms)",
+            "aliases": [
+                "take"
+            ]
+        },
+        "take": {
+            "syntax": "<@user>",
+            "help": "Takes points from mentioned user. (needs admin perms)",
+            "aliases": [
+                "deduct"
+            ]
+        },
+        "coolbot": {
+            "syntax": "",
+            "help": "Just try it out.",
+            "aliases": []
+        }
+    }
+}

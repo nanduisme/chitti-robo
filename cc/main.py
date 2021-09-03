@@ -5,6 +5,7 @@ from typing import Callable
 import discord
 from discord.ext import commands
 from discord.ext.commands.context import Context
+from discord.ext.commands.errors import CommandRegistrationError
 from replit import db
 
 from embeds import GeneralEmbeds, CustomCommandEmbeds
@@ -70,15 +71,8 @@ class Cog(commands.Cog):
             elif keyword in message.content.lower().split():
                 await message.channel.send(random.choice(guild.replies[keyword]))
 
-    @commands.group(invoke_without_command=True)
-    async def cc(self, ctx: Context):
-
-        """Parent commands for cc command group."""
-
-        await ctx.send("Uh oh! Cant use this command without a subcommand.")
-
-    @cc.command()
-    async def enable(self, ctx: Context):
+    @commands.command(aliases=['on', 'enable'])
+    async def listen(self, ctx: Context):
 
         """Enables custom commands for the whole server."""
 
@@ -94,8 +88,8 @@ class Cog(commands.Cog):
 
         self.dump_guild(guild)
 
-    @cc.command()
-    async def disable(self, ctx: Context):
+    @commands.command(aliases=['off', 'disable'])
+    async def deafen(self, ctx: Context):
 
         """Disables custom commands for the whole server."""
 
@@ -111,8 +105,8 @@ class Cog(commands.Cog):
 
         self.dump_guild(guild)
 
-    @cc.command()
-    async def add(self, ctx: Context, *key):
+    @commands.command(aliases=['addcc'])
+    async def new(self, ctx: Context, *key):
 
         """Adds a key and a reply to your server."""
 
@@ -181,7 +175,7 @@ class Cog(commands.Cog):
 
         await ctx.send(embed=CustomCommandEmbeds.Add.added(key, reply))
 
-    @cc.command()
+    @commands.command(aliases=['r'])
     async def remove(self, ctx: Context, *key):
 
         """Removes a reply from a specified key."""
@@ -248,7 +242,7 @@ class Cog(commands.Cog):
 
         await ctx.send(embed=CustomCommandEmbeds.Remove.removed(key, reply))
 
-    @cc.command()
+    @commands.command(aliases=['t'])
     async def toggle(self, ctx: Context, *key):
 
         """Toggles a key and all its replies on or off."""
@@ -276,7 +270,7 @@ class Cog(commands.Cog):
             guild.active_keys.append(key)
             await ctx.send(embed=CustomCommandEmbeds.Toggle.toggled_on(key))
 
-    @cc.command(aliases=["list"])
+    @commands.command(aliases=["list", "cc", "all"])
     async def show(self, ctx: Context, *key):
 
         """Shows list of all the keys and replies."""
