@@ -71,7 +71,7 @@ class Cog(commands.Cog):
             elif keyword in message.content.lower().split():
                 await message.channel.send(random.choice(guild.replies[keyword]))
 
-    @commands.command(aliases=['on', 'enable'])
+    @commands.command(aliases=["on", "enable"])
     async def listen(self, ctx: Context):
 
         """Enables custom commands for the whole server."""
@@ -88,7 +88,7 @@ class Cog(commands.Cog):
 
         self.dump_guild(guild)
 
-    @commands.command(aliases=['off', 'disable'])
+    @commands.command(aliases=["off", "disable"])
     async def deafen(self, ctx: Context):
 
         """Disables custom commands for the whole server."""
@@ -105,7 +105,7 @@ class Cog(commands.Cog):
 
         self.dump_guild(guild)
 
-    @commands.command(aliases=['addcc'])
+    @commands.command(aliases=["addcc"])
     async def new(self, ctx: Context, *key):
 
         """Adds a key and a reply to your server."""
@@ -175,7 +175,7 @@ class Cog(commands.Cog):
 
         await ctx.send(embed=CustomCommandEmbeds.Add.added(key, reply))
 
-    @commands.command(aliases=['r'])
+    @commands.command(aliases=["r"])
     async def remove(self, ctx: Context, *key):
 
         """Removes a reply from a specified key."""
@@ -242,7 +242,7 @@ class Cog(commands.Cog):
 
         await ctx.send(embed=CustomCommandEmbeds.Remove.removed(key, reply))
 
-    @commands.command(aliases=['t'])
+    @commands.command(aliases=["t"])
     async def toggle(self, ctx: Context, *key):
 
         """Toggles a key and all its replies on or off."""

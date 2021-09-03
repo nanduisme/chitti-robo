@@ -220,7 +220,5 @@ class MessagingScoreEmbeds:
         @staticmethod
         def page_not_found():
             return discord.Embed(
-                title = 'Where is that...?',
-                description = 'Page not found!',
-                color = RED
+                title="Where is that...?", description="Page not found!", color=RED
             )

@@ -46,7 +46,7 @@ class Member:
 
     @property
     def mention(self):
-        return f'<@{self.id}>'
+        return f"<@{self.id}>"
 
     def get_avatar_url(self, bot, guild):
         return bot.get_guild(guild.id).get_member(self.id).avatar_url
@@ -54,4 +54,4 @@ class Member:
     def get_rank(self, guild: Guild):
         self = asdict(self)
         leaderboard = guild.get_leaderboard()
-        return (leaderboard.index(self) + 1) if self['score'] > 0 else 0
+        return (leaderboard.index(self) + 1) if self["score"] > 0 else 0

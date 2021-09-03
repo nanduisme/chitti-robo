@@ -82,10 +82,10 @@ class Cog(commands.Cog):
 
         '''Gives the quotient of two given numbers.'''
 
-        if await self.math(nums, '+', ctx) is None:
+        if await self.math(nums, '/', ctx) is None:
             return
             
-        show, result = await self.math(nums, '+', ctx)
+        show, result = await self.math(nums, '/', ctx)
         await ctx.send(f'{show} = {result}')
 
     # Statistical Measures of Central Tendancies

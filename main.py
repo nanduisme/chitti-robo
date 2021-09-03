@@ -23,10 +23,10 @@ initial_extensions = [
     "ttt.main",
     "cc.main",
     "mth.main",
-"ms.main",
-   "ask.ask",
-"help",
-   "suggestion_react.react",
+    "ms.main",
+    "ask.ask",
+    "help",
+    "suggestion_react.react",
 ]
 
 intents = discord.Intents.default()
