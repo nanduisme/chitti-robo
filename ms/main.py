@@ -26,7 +26,7 @@ class Cog(commands.Cog):
         mention = mention.replace("#", "")
         mention = mention.replace(">", "")
         mention = mention.replace("!", "")
-        return mention
+        return int(mention)
 
     # Make rank into a 000 format
     @staticmethod
@@ -309,11 +309,11 @@ class Cog(commands.Cog):
             mention = await self.bot.wait_for("message")
             mention = mention.content
 
-        if ctx.guild.get_member(self.decode_menion(mention)) is None:
+        if ctx.guild.get_member(self.decode_mention(mention)) is None:
             await ctx.send(f'❌ Member {mention} not found!')
             return
 
-        member = self.get_member(guild, ctx.author.id, ctx.author.display_name)
+        member = self.get_member(guild, ctx.guild.get_member(self.decode_mention(mention)).id, ctx.guild.get_member(self.decode_mention(mention)).display_name)
 
         while True:
             await ctx.send(
@@ -345,14 +345,16 @@ class Cog(commands.Cog):
         else:
             member.score -= take
 
+        self.dump(guild, member)
+
         await ctx.send(
             f"✅ {member.mention}'s score is now `{member.score}` after {ctx.author.mention} deduced `{take}` points."
         )
 
-    @deduct.error
-    async def deduct_error(self, ctx, error):
-        if isinstance(error, commands.MissingPermissions):
-            await ctx.send("❌ You do not have the clearance level to use this command.")
+    # @deduct.error
+    # async def deduct_error(self, ctx, error):
+    #     if isinstance(error, commands.MissingPermissions):
+    #         await ctx.send("❌ You do not have the clearance level to use this command.")
 
 
 def setup(bot):

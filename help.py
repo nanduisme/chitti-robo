@@ -25,7 +25,8 @@ class Cog(commands.Cog):
             for group in self.data["groups"]:
                 embed.add_field(
                     name = group,
-                    value= ''.join(f"`{c}` " for c in self.data["groups"][group])
+                    value= ''.join(f"`{c}` " for c in self.data["groups"][group]),
+                    inline = False
                 )
 
         else:
@@ -35,16 +36,19 @@ class Cog(commands.Cog):
             )
             embed.add_field(
                 name = 'Syntax',
-                value=f'`{ctx.prefix}{command} {self.data["commands"][command]["syntax"]}`'
+                value=f'`{ctx.prefix}{command} {self.data["commands"][command]["syntax"]}`',
+                inline = False
             )
             embed.add_field(
                 name="Description",
-                value=self.data['commands'][command]['help']
+                value=self.data['commands'][command]['help'],
+                inline = False
             )
             if self.data['commands'][command]['aliases'] != []:
                 embed.add_field(
                     name = 'Aliases',
-                    value=''.join(f'`{alias}`, ' for alias in self.data['commands'][command]['aliases'])
+                    value=''.join(f'`{alias}`, ' for alias in self.data['commands'][command]['aliases']),
+                    inline = False
                 )
 
             embed.set_footer(
