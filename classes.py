@@ -16,6 +16,8 @@ class Guild:
     # For messaging scores
     members: dict = field(default_factory=dict)
     excluded_channels: List[str] = field(default_factory=list)
+    point_cap_on: bool = field(default=False)
+    point_cap: int = field(default=10)
 
     def get_leaderboard(self, page: int = None) -> list:
         sorted_members = sorted(
@@ -40,6 +42,7 @@ class Member:
     # For messaging scores
     display_name: str
     score: int = field(default=0, compare=False)
+    temp_score: int = 0
 
     # For Games
     is_playing: bool = False

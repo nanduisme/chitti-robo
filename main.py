@@ -8,7 +8,7 @@ from keep_alive import keep_alive  # To keep the bot alive and not shut down.
 # Function that recognizes and returns prefixes when metioned by a user.
 def get_prefix(bot, message):
     # All the prefixes recognized by Chitti.
-    prefixes = ["do ", "$", "chitti ", "/"]
+    prefixes = ["do ", "$", "chitti ", "?"]
 
     if not message.guild:
         return "$"
@@ -61,6 +61,14 @@ async def on_ready():
 
 # Calls keep_alive function to keep the bot alive. Obviously.
 keep_alive()
+
+from replit import db
+
+for guild in db:
+    db[guild]["point_cap"] = 10
+    db[guild]["point_cap_on"] = False
+    for member in db[guild]["members"]:
+        db[guild]["members"][member]["temp_score"] = 0
 
 # Runs the bot instance
 bot.run(

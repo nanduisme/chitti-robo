@@ -2,11 +2,11 @@ from dataclasses import asdict
 
 import discord
 from replit import db
-from discord.ext import commands
+from discord.ext import commands, tasks
 from discord.ext.commands.context import Context
 
 from classes import Guild, Member
-from embeds import MessagingScoreEmbeds, GeneralEmbeds
+from embeds import MessagingScoreEmbeds
 
 
 class Cog(commands.Cog):
@@ -78,8 +78,9 @@ class Cog(commands.Cog):
             return Guild(id)
 
     def get_member(self, guild: Guild, id: int, display_name: str) -> Member:
+        id = str()
         for member in guild.members:
-            if guild.members[member]["id"] == id:
+            if member == id:
                 member = Member(**guild.members[member])
                 member.display_name = display_name
                 return member
@@ -114,6 +115,28 @@ class Cog(commands.Cog):
                 guild, member_id, ctx.guild.get_member(member_id).display_name
             )
 
+    # POINT CAP LOOP
+    @tasks.loop(seconds=60)
+    async def reset_temp_score(self):
+        print("resetting")
+        for guild in db:
+            guild = self.get_guild(guild)
+
+            if not guild.point_cap_on:
+                continue
+
+            for member in guild.members:
+                member = self.get_member(
+                    guild, member, guild.members[member]["display_name"]
+                )
+                member.temp_score = 0
+
+                self.dump(guild, member)
+
+    @commands.Cog.listener(name="on_ready")
+    async def start_loop(self):
+        await self.reset_temp_score.start()
+
     # COMMANDS
 
     # On message
@@ -130,10 +153,21 @@ class Cog(commands.Cog):
         if message.channel.id in guild.excluded_channels:
             return
 
+        if member.temp_score >= guild.point_cap and guild.point_cap_on:
+            print(
+                f"{member.display_name} - Score : {member.score} temp_score : {member.temp_score}"
+            )
+
+            return
+
         member.score += 1
+        member.temp_score += 1 if guild.point_cap_on else 0
+
+        print(
+            f"{member.display_name} - Score : {member.score} temp_score : {member.temp_score}"
+        )
 
         self.dump(guild, member)
-
 
     # Score
     @commands.command(aliases=["s", "rank"])
@@ -197,14 +231,16 @@ class Cog(commands.Cog):
 
     # Exclude
     @commands.command(aliases=["exc"])
-    @commands.has_permissions(administrator = True)
-    async def exclude(self, ctx: Context, channel= None):
+    @commands.has_permissions(administrator=True)
+    async def exclude(self, ctx: Context, channel=None):
         """Excludes a channel from adding up messaginf scores."""
 
         guild = self.get_guild(ctx.guild.id)
 
         if channel is None:
-            await ctx.send(f'❌ Mention a channel at the end of the command! Eg: `{ctx.prefix}{ctx.command} #channel-name`')
+            await ctx.send(
+                f"❌ Mention a channel at the end of the command! Eg: `{ctx.prefix}{ctx.command} #channel-name`"
+            )
             return
 
         if "<#" in channel and ">" in channel:
@@ -236,14 +272,16 @@ class Cog(commands.Cog):
             await ctx.send("❌ Channel not found.")
 
     # Include
-    @commands.command(aliases=['inc'])
-    async def include(self, ctx: Context, channel = None):
+    @commands.command(aliases=["inc"])
+    async def include(self, ctx: Context, channel=None):
         """Includes a channel for adding up messaging scores."""
 
         guild = self.get_guild(ctx.guild.id)
 
         if channel is None:
-            await ctx.send(f'❌ Mention a channel at the end of the command! Eg: `{ctx.prefix}{ctx.command} #channel-name`')
+            await ctx.send(
+                f"❌ Mention a channel at the end of the command! Eg: `{ctx.prefix}{ctx.command} #channel-name`"
+            )
 
         if "<#" in channel and ">" in channel:
             channel = ctx.guild.get_channel(int(self.decode_channel(channel)))
@@ -286,7 +324,7 @@ class Cog(commands.Cog):
         )
         if len(guild.excluded_channels) > 0:
             excluded_channels = "".join(
-                f'<#{channel}>' + "\n" for channel in guild.excluded_channels
+                f"<#{channel}>" + "\n" for channel in guild.excluded_channels
             )
 
             embed.add_field(name="List:", value=excluded_channels)
@@ -299,7 +337,7 @@ class Cog(commands.Cog):
     # Deduct
     @commands.command(aliases=["take"])
     @commands.has_permissions(administrator=True)
-    async def deduct(self, ctx: Context, mention = None):
+    async def deduct(self, ctx: Context, mention=None):
         """Deducts points from a member."""
 
         guild = self.get_guild(ctx.guild.id)
@@ -310,10 +348,14 @@ class Cog(commands.Cog):
             mention = mention.content
 
         if ctx.guild.get_member(self.decode_mention(mention)) is None:
-            await ctx.send(f'❌ Member {mention} not found!')
+            await ctx.send(f"❌ Member {mention} not found!")
             return
 
-        member = self.get_member(guild, ctx.guild.get_member(self.decode_mention(mention)).id, ctx.guild.get_member(self.decode_mention(mention)).display_name)
+        member = self.get_member(
+            guild,
+            ctx.guild.get_member(self.decode_mention(mention)).id,
+            ctx.guild.get_member(self.decode_mention(mention)).display_name,
+        )
 
         while True:
             await ctx.send(
@@ -336,7 +378,7 @@ class Cog(commands.Cog):
 
         if response.content.lower() == "n":
             await response.reply("❌ Command cancelled.")
-            return        
+            return
 
         take = take if take > 0 else 0 - take
 
@@ -351,10 +393,69 @@ class Cog(commands.Cog):
             f"✅ {member.mention}'s score is now `{member.score}` after {ctx.author.mention} deduced `{take}` points."
         )
 
-    # @deduct.error
-    # async def deduct_error(self, ctx, error):
-    #     if isinstance(error, commands.MissingPermissions):
-    #         await ctx.send("❌ You do not have the clearance level to use this command.")
+    @deduct.error
+    async def deduct_error(self, ctx, error):
+        if isinstance(error, commands.MissingPermissions):
+            await ctx.send("❌ You do not have the clearance level to use this command.")
+        else:
+            raise error
+
+    @commands.command(aliases=["pc", "togglecap", "cap"])
+    @commands.has_permissions(administrator=True)
+    async def pointcap(self, ctx: Context):
+
+        """Toggle point cap for server."""
+
+        guild = self.get_guild(ctx.guild.id)
+
+        guild.point_cap_on = not guild.point_cap_on
+
+        await ctx.send(
+            f'✅ Point cap of `{guild.point_cap}` has been toggled {"**ON**" if guild.point_cap_on else "**OFF**"} for this server.'
+        )
+
+        self.dump(guild)
+
+    @pointcap.error
+    async def pc_error(self, ctx, error):
+        if isinstance(error, commands.MissingPermissions):
+            await ctx.send("❌ You do not have the clearance level to use this command.")
+        else:
+            raise error
+
+    @commands.command(aliases=["sc"])
+    @commands.has_permissions(administrator=True)
+    async def setcap(self, ctx: Context, cap=None):
+
+        """Set point cap"""
+
+        guild = self.get_guild(ctx.guild.id)
+        if cap is None:
+            await ctx.send(
+                f"❌ Invalid argument `{cap}`. Please use `{ctx.prefix}help {ctx.command}` for help."
+            )
+            return
+        try:
+            cap = int(cap)
+        except Exception:
+            await ctx.send(
+                f"❌ Invalid argument `{cap}`. Please use `{ctx.prefix}help {ctx.command}` for help."
+            )
+            return
+
+        if cap < 0:
+            cap = -cap
+        guild.point_cap = cap
+        self.dump(guild)
+
+        await ctx.send(f"✅ Point cap of this server has been set to `{cap}`.")
+
+    @setcap.error
+    async def sc_error(self, ctx, error):
+        if isinstance(error, commands.MissingPermissions):
+            await ctx.send("❌ You do not have the clearance level to use this command.")
+        else:
+            raise error
 
 
 def setup(bot):
