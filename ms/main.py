@@ -118,7 +118,6 @@ class Cog(commands.Cog):
     # POINT CAP LOOP
     @tasks.loop(seconds=60)
     async def reset_temp_score(self):
-        print("resetting")
         for guild in db:
             guild = self.get_guild(guild)
 
@@ -154,19 +153,10 @@ class Cog(commands.Cog):
             return
 
         if member.temp_score >= guild.point_cap and guild.point_cap_on:
-            print(
-                f"{member.display_name} - Score : {member.score} temp_score : {member.temp_score}"
-            )
-
             return
 
         member.score += 1
         member.temp_score += 1 if guild.point_cap_on else 0
-
-        print(
-            f"{member.display_name} - Score : {member.score} temp_score : {member.temp_score}"
-        )
-
         self.dump(guild, member)
 
     # Score

@@ -23,7 +23,7 @@ class MiscCommands(commands.Cog):
         dev = self.bot.get_user(591078175778537512)
         feedback = "".join(f"{word} " for word in feedback)
 
-        await dev.send(f"{ctx.author.mention} says: " + feedback)
+        await dev.send(f"**{ctx.author.display_name}** from **{ctx.guild.name}** says: " + feedback)
         await ctx.reply(
             "Team Chitti thanks you for your valuable feedback! 😄", delete_after=30
         )
