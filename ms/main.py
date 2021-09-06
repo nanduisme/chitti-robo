@@ -78,7 +78,7 @@ class Cog(commands.Cog):
             return Guild(id)
 
     def get_member(self, guild: Guild, id: int, display_name: str) -> Member:
-        id = str()
+        id = str(id)
         for member in guild.members:
             if member == id:
                 member = Member(**guild.members[member])
