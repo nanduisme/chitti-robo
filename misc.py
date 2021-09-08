@@ -28,6 +28,14 @@ class MiscCommands(commands.Cog):
             "Team Chitti thanks you for your valuable feedback! 😄", delete_after=30
         )
 
+    @commands.command()
+    async def ping(self, ctx):
+    
+        '''Ping latency'''
+    
+        await ctx.send(f'I am speed! `{self.bot.latency} ms`')
+    
+
 
 def setup(bot):
     bot.add_cog(MiscCommands(bot))

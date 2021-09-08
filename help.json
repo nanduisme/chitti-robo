@@ -34,7 +34,8 @@
         ],
         "✨ Misc": [
             "coolbot",
-            "feedback"
+            "feedback",
+            "ping"
         ]
     },
     "commands": {
@@ -423,6 +424,11 @@
         "feedback": {
             "syntax": "<feedback>",
             "help" : "Give feedback on bugs and new features you'd like to see, or just a good review! :)",
+            "aliases" : []
+        },
+        "ping": {
+            "syntax": "",
+            "help" : "Shows response speed or latency of Chitti.",
             "aliases" : []
         }
     }
