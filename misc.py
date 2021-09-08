@@ -33,7 +33,7 @@ class MiscCommands(commands.Cog):
     
         '''Ping latency'''
     
-        await ctx.send(f'I am speed! `{self.bot.latency} ms`')
+        await ctx.send(f'I am speed! `{round(self.bot.latency*1000, 1)} ms`')
     
 
 
