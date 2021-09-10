@@ -39,22 +39,18 @@ class Cog(commands.Cog):
         else:
             return rank
 
-    # Add in k and M and all that to the score
-    @staticmethod
-    def add_suffix(score: int) -> str:
-        if score >= 1000 and score < 10000:
-            return f"{str(round(score/1000, 1))}k"
-        elif score >= 10000 and score < 1000000:
-            return f"{str(score//1000)}k"
-        elif score >= 1000000:
-            return f"{str(round(score/1000000, 1))}M"
-        else:
-            return str(score)
-
     # Make score look nice lol
     @staticmethod
     def format_score(score: int) -> str:
-        score = str(score)
+        if score >= 1_000 and score < 10_000:
+            score = f"{str(round(score / 1_000, 1))}k"
+        elif score >= 10_000 and score < 1_000_000:
+            score = f"{str(score // 1_000)}k"
+        elif score >= 1_000_000:
+            score = f"{str(round(score / 1_000_000, 1))}M"
+        else:
+            score = str(score)
+
         return f'{score}{" "*(7-len(score))}'
 
     # Get medal
@@ -69,24 +65,13 @@ class Cog(commands.Cog):
 
         return ""
 
-    # Get guild and member
+    # Get guild
     @staticmethod
     def get_guild(id: int) -> Guild:
         if str(id) in db:
             return Guild(**db[str(id)])
         else:
             return Guild(id)
-
-    def get_member(self, guild: Guild, id: int, display_name: str) -> Member:
-        id = str(id)
-        for member in guild.members:
-            if member == id:
-                member = Member(**guild.members[member])
-                member.display_name = display_name
-                return member
-
-        self.dump(guild, Member(id, display_name))
-        return Member(id, display_name)
 
     # Dump guild and member
     @staticmethod
@@ -95,25 +80,6 @@ class Cog(commands.Cog):
             guild.members[str(member.id)] = asdict(member)
 
         db[str(guild.id)] = asdict(guild)
-
-    # Get member from mention
-    def find_member(self, ctx: Context, mention: str):
-        member_id = self.decode_mention(mention)
-        try:
-            member_id = int(member_id)
-        except:
-            return
-
-        guild = self.get_guild(ctx.guild.id)
-        if (
-            ctx.guild.get_member(member_id) is None
-            or ctx.guild.get_member(member_id).bot
-        ):
-            return
-        else:
-            return self.get_member(
-                guild, member_id, ctx.guild.get_member(member_id).display_name
-            )
 
     # POINT CAP LOOP
     @tasks.loop(seconds=60)
@@ -125,11 +91,9 @@ class Cog(commands.Cog):
                 continue
 
             for member in guild.members:
-                member = self.get_member(
-                    guild, member, guild.members[member]["display_name"]
-                )
-                member.temp_score = 0
+                member = guild.get_member(int(member))
 
+                member.temp_score = 0
                 self.dump(guild, member)
 
     @commands.Cog.listener(name="on_ready")
@@ -147,10 +111,11 @@ class Cog(commands.Cog):
             return
 
         guild = self.get_guild(message.guild.id)
-        member = self.get_member(guild, message.author.id, message.author.display_name)
 
         if message.channel.id in guild.excluded_channels:
             return
+
+        member = guild.get_member(int(message.author.id), message.author.display_name)
 
         if member.temp_score >= guild.point_cap and guild.point_cap_on:
             return
@@ -161,24 +126,42 @@ class Cog(commands.Cog):
 
     # Score
     @commands.command(aliases=["s", "rank"])
-    async def score(self, ctx: Context, mention: str = None):
+    async def score(self, ctx: Context, member: str = None):
         """Shows score of user if mentioned else shows score of invoker."""
 
-        if mention is None or self.find_member(ctx, mention) is None:
-            member = self.get_member(
-                self.get_guild(ctx.guild.id), ctx.author.id, ctx.author.display_name
-            )
-        else:
-            member = self.find_member(ctx, mention)
+        guild = self.get_guild(ctx.guild.id)
 
-        pfp_url = member.get_avatar_url(self.bot, self.get_guild(ctx.guild.id))
+        try:
+            rank = int(member)
+        except Exception:
+            pass
+        else:
+            lb = guild.get_leaderboard()
+            if rank > len(lb):
+                await ctx.send(
+                    embed=discord.Embed(
+                        title="Huh...?", description="❌ Invalid Rank!", color=0xFF0000
+                    )
+                )
+                return
+
+            member = lb[rank - 1]
+
+        if not isinstance(member, Member):
+            if (
+                member is None
+                or guild.get_member(self.decode_mention(member), bot=self.bot) is None
+            ):
+                member = guild.get_member(ctx.author.id, ctx.author.display_name)
+
+            else:
+                member = guild.get_member(self.decode_mention(member))
+
+        pfp_url = guild.get_avatar_url(self.bot, member.id)
 
         await ctx.reply(
             embed=MessagingScoreEmbeds.Score.show_score(
-                member.display_name,
-                pfp_url,
-                member.score,
-                member.get_rank(self.get_guild(ctx.guild.id)),
+                member.display_name, pfp_url, member.score, guild.get_rank(member.id)
             ),
             mention_author=False,
         )
@@ -188,13 +171,13 @@ class Cog(commands.Cog):
     async def lb(self, ctx: Context, page_no: int = None):
         """Shows messaging score leaderboard for the server"""
 
-        if page_no is None:
+        if not page_no:
             page_no = 1
 
         guild = self.get_guild(ctx.guild.id)
         leaderboard, pages = guild.get_leaderboard(page_no)
         page = [
-            f'{self.format_rank(Member(**member).get_rank(guild))} ⫶ {self.format_score(self.add_suffix(member["score"]))} ⫶ {member["display_name"]} {self.get_medal(Member(**member).get_rank(guild))}'
+            f"{(rank := self.format_rank(guild.get_rank(member.id)))} ⫶ {self.format_score(member.score)} ⫶ {member.display_name} {self.get_medal(rank)}"
             for member in leaderboard
         ]
 
@@ -227,17 +210,15 @@ class Cog(commands.Cog):
 
         guild = self.get_guild(ctx.guild.id)
 
-        if channel is None:
-            await ctx.send(
-                f"❌ Mention a channel at the end of the command! Eg: `{ctx.prefix}{ctx.command} #channel-name`"
-            )
+        if not channel:
+            await ctx.send(f"❌ Mention a channel!", delete_after=20)
             return
 
         if "<#" in channel and ">" in channel:
             channel = ctx.guild.get_channel(int(self.decode_mention(channel)))
 
         else:
-            await ctx.send("❌ Channel not found.")
+            await ctx.send("❌ Channel not found.", delete_after=20)
             return
 
         if channel.id in guild.excluded_channels:
@@ -269,12 +250,10 @@ class Cog(commands.Cog):
         guild = self.get_guild(ctx.guild.id)
 
         if channel is None:
-            await ctx.send(
-                f"❌ Mention a channel at the end of the command! Eg: `{ctx.prefix}{ctx.command} #channel-name`"
-            )
+            await ctx.send(f"❌ Mention a channel!", delete_after=20)
 
         if "<#" in channel and ">" in channel:
-            channel = ctx.guild.get_channel(int(self.decode_channel(channel)))
+            channel = ctx.guild.get_channel(self.decode_mention(channel))
         else:
             await ctx.send("❌ Channel not found.")
             return
@@ -325,62 +304,64 @@ class Cog(commands.Cog):
         return
 
     # Deduct
-    @commands.command(aliases=["take"])
+    @commands.command(aliases=["points"])
     @commands.has_permissions(administrator=True)
-    async def deduct(self, ctx: Context, mention=None):
+    async def deduct(self, ctx: Context, mention=None, points=None):
         """Deducts points from a member."""
 
-        guild = self.get_guild(ctx.guild.id)
-
-        if mention is None:
-            await ctx.send(f"Mention the member you would like to take points from.")
-            mention = await self.bot.wait_for("message")
-            mention = mention.content
-
-        if ctx.guild.get_member(self.decode_mention(mention)) is None:
-            await ctx.send(f"❌ Member {mention} not found!")
+        if not mention or not points:
+            await ctx.send(
+                embed=discord.Embed(
+                    description="❌ Invalid arguments!", color=0xFF0000
+                ).set_footer(text=f"Use *{ctx.prefix}help {ctx.command}* for help.")
+            )
             return
 
-        member = self.get_member(
-            guild,
-            ctx.guild.get_member(self.decode_mention(mention)).id,
-            ctx.guild.get_member(self.decode_mention(mention)).display_name,
-        )
-
-        while True:
+        try:
+            points = int(points)
+        except Exception:
             await ctx.send(
-                f"How many points would you like to deduct from {member.mention}?"
+                embed=discord.Embed(description=f"❌ Invalid point argument!")
             )
-            take = await self.bot.wait_for("message")
-            try:
-                take = int(take.content)
-                break
-            except:
-                await ctx.send("❌ Please enter a valid number.")
+            return
 
-        def yn_check(m):
-            return m.author == ctx.author and m.content.lower() in ["y", "n"]
+        try:
+            mention = self.decode_mention(mention)
+        except Exception:
+            await ctx.send(embed=discord.Embed(description="❌ Invalid Mention!"))
+            return
+
+        guild = self.get_guild(ctx.guild.id)
+        member = guild.get_member(mention, bot=self.bot)
+
+        if not member:
+            await ctx.send("❌ Member not found!")
+            return
 
         await ctx.send(
-            f":interrobang: Are you sure you want to deduce `{take}` points from {member.mention}? (y/n)"
+            f":interrobang: Are you sure you want to deduce `{points}` points from {member.mention}? (y/n)"
         )
-        response = await self.bot.wait_for("message", check=yn_check)
+
+        response = await self.bot.wait_for(
+            "message",
+            check=lambda m: m.author == ctx.author and m.content.lower() in ["y", "n"],
+        )
 
         if response.content.lower() == "n":
             await response.reply("❌ Command cancelled.")
             return
 
-        take = take if take > 0 else 0 - take
+        points = points if points > 0 else 0 - points
 
-        if member.score - take < 0:
+        if member.score - points < 0:
             member.score = 0
         else:
-            member.score -= take
+            member.score -= points
 
         self.dump(guild, member)
 
         await ctx.send(
-            f"✅ {member.mention}'s score is now `{member.score}` after {ctx.author.mention} deduced `{take}` points."
+            f"✅ {member.mention}'s score is now `{member.score}` after {ctx.author.mention} deduced `{points}` points."
         )
 
     @deduct.error

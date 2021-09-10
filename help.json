@@ -235,7 +235,7 @@
             ]
         },
         "score": {
-            "syntax": "[@user]",
+            "syntax": "[@user/rank]",
             "help": "Shows your messaging score.",
             "aliases": [
                 "s",
@@ -243,7 +243,7 @@
             ]
         },
         "s": {
-            "syntax": "[@user]",
+            "syntax": "[@user/rank]",
             "help": "Shows your messaging score.",
             "aliases": [
                 "score",
@@ -251,7 +251,7 @@
             ]
         },
         "rank": {
-            "syntax": "[@user]",
+            "syntax": "[@user/rank]",
             "help": "Shows your messaging score.",
             "aliases": [
                 "s",
