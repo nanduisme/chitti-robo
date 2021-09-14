@@ -157,7 +157,7 @@ class Cog(commands.Cog):
             else:
                 member = guild.get_member(self.decode_mention(member))
 
-        pfp_url = guild.get_avatar_url(self.bot, member.id)
+        pfp_url = guild.get_avatar_url(self.bot, int(member.id))
 
         await ctx.reply(
             embed=MessagingScoreEmbeds.Score.show_score(
