@@ -24,6 +24,7 @@ initial_extensions = [
     "cc.main",
     "mth.main",
     "ms.main",
+    "translate.main",
     "ask.ask",
     "help",
     "suggestion_react.react",
