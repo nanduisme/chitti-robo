@@ -72,10 +72,10 @@ class Cog(commands.Cog):
 
         if args[-1][0] != '?':
             langcode = 'en'
-            text_ = ''.join(args)
+            text_ = ' '.join(args)
         else:
             langcode = args[-1][1:].lower()
-            text_ = ''.join(args[:-1])
+            text_ = ' '.join(args[:-1])
 
         if len(text_) < 0 or langcode not in LANGUAGES:
             await ctx.send(f"❌ Please enter a valid language code and use '?'.\n**Eg:** `{ctx.prefix}translate Random text ?ja`")
