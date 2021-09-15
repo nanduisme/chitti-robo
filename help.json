@@ -32,6 +32,11 @@
             "pointcap",
             "setcap"
         ],
+        "🈴 Translate": [
+            "detect",
+            "langlist",
+            "translate"
+        ],
         "✨ Misc": [
             "coolbot",
             "feedback",
@@ -378,38 +383,46 @@
             "syntax": "",
             "help": "Turns on or off point cap [points per minute]. (needs admin perms)",
             "aliases": [
-                "pc", "togglecap", "cap"
+                "pc",
+                "togglecap",
+                "cap"
             ]
         },
         "pc": {
             "syntax": "",
             "help": "Turns on or off point cap [points per minute]. (needs admin perms)",
             "aliases": [
-                "pointcap", "togglecap", "cap"
+                "pointcap",
+                "togglecap",
+                "cap"
             ]
         },
-        "togglecap":{
+        "togglecap": {
             "syntax": "",
             "help": "Turns on or off point cap [points per minute]. (needs admin perms)",
             "aliases": [
-                "pc", "pointcap", "cap"
+                "pc",
+                "pointcap",
+                "cap"
             ]
         },
-        "cap":{
+        "cap": {
             "syntax": "",
             "help": "Turns on or off point cap [points per minute]. (needs admin perms)",
             "aliases": [
-                "pc", "togglecap", "pointcap"
+                "pc",
+                "togglecap",
+                "pointcap"
             ]
         },
-        "sc":{
+        "sc": {
             "syntax": "<points>",
             "help": "Sets point cap [points per minute]. (needs admin perms)",
             "aliases": [
                 "setcap"
             ]
         },
-        "setcap":{
+        "setcap": {
             "syntax": "<points>",
             "help": "Sets Point cap [points per minute]. (needs admin perms)",
             "aliases": [
@@ -423,13 +436,56 @@
         },
         "feedback": {
             "syntax": "<feedback>",
-            "help" : "Give feedback on bugs and new features you'd like to see, or just a good review! :)",
-            "aliases" : []
+            "help": "Give feedback on bugs and new features you'd like to see, or just a good review! :)",
+            "aliases": []
         },
         "ping": {
             "syntax": "",
-            "help" : "Shows response speed or latency of Chitti.",
-            "aliases" : []
+            "help": "Shows response speed or latency of Chitti.",
+            "aliases": []
+        },
+        "detect": {
+            "syntax": "<text>",
+            "help": "Predicts the language of a given sample of text.",
+            "aliases": [
+                "lang",
+                "detectlang"
+            ]
+        },
+        "lang": {
+            "syntax": "<text>",
+            "help": "Predicts the language of a given sample of text.",
+            "aliases": [
+                "detect",
+                "detectlang"
+            ]
+        },
+        "detectlang": {
+            "syntax": "<text>",
+            "help": "Predicts the language of a given sample of text.",
+            "aliases": [
+                "lang",
+                "detect"
+            ]
+        },
+        "langlist": {
+            "syntax": "",
+            "help": "Shows list of all languages supported.",
+            "aliases": [
+                "langs"
+            ]
+        },
+        "langs": {
+            "syntax": "",
+            "help": "Shows list of all languages supported.",
+            "aliases": [
+                "langlist"
+            ]
+        },
+        "translate": {
+            "syntax": "<text> [?langcode]",
+            "help": "Translates given text to a given language. (Default: to English)",
+            "aliases":[]
         }
     }
 }
